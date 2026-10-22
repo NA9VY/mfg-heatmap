@@ -8,24 +8,25 @@
   body { font-family: system-ui, sans-serif; margin: 20px; background: #f8f9fa; }
   h1 { font-size: 1.4rem; color: #1a1a1a; }
   h2 { font-size: 1.2rem; margin-top: 40px; }
-  #chart { width: 100%; height: 700px; }
+  #chart { width: 100%; height: 900px; }
   #map { width: 100%; height: 600px; }
   .note { color: #666; font-size: 0.9rem; margin-top: 10px; }
 </style>
 </head>
 <body>
-<h1>Manufacturing Employment<br><small>I-65 / I-70 Corridor (SE Indiana & SW Ohio) — illustrative values</small></h1>
+<h1>Manufacturing Employment<br><small>SE Indiana (I-65/I-70 constrained) + SW Ohio — illustrative values</small></h1>
 
 <h2>Bar Chart (sorted highest to lowest)</h2>
 <div id="chart"></div>
-<p class="note">Blue = lower, red = higher. Placeholder data for planning.</p>
+<p class="note">Blue = lower, red = higher. Counties with 0 are included for completeness (no prior estimate). Placeholder data for planning.</p>
 
 <h2>County Choropleth Map</h2>
 <div id="map"></div>
-<p class="note">Same data. Hover for details. Map loads after fetching county boundaries.</p>
+<p class="note">All SE Indiana counties bounded by I-65 & I-70 (Ohio, Dearborn, Switzerland, Jefferson, Ripley, etc.) plus prior SW Ohio ones. Hover for details.</p>
 
 <script>
 const rawData = [
+  // Prior high-value ones
   {county: "Hamilton, OH", fips: "39061", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
   {county: "Montgomery, OH", fips: "39113", employees: 28000, corridor: "I-70/I-75 Dayton"},
   {county: "Marion, IN", fips: "18097", employees: 18500, corridor: "I-65/I-70"},
@@ -54,7 +55,18 @@ const rawData = [
   {county: "Fayette, IN", fips: "18041", employees: 1100, corridor: "I-74"},
   {county: "Perry, IN", fips: "18123", employees: 900, corridor: "I-65"},
   {county: "Union, IN", fips: "18161", employees: 600, corridor: "I-74"},
-  {county: "Crawford, IN", fips: "18025", employees: 400, corridor: "I-65"}
+  {county: "Crawford, IN", fips: "18025", employees: 400, corridor: "I-65"},
+  // Expanded SE Indiana counties (I-65/I-70 constrained)
+  {county: "Dearborn, IN", fips: "18029", employees: 0, corridor: "SE Indiana / Ohio River"},
+  {county: "Ohio, IN", fips: "18115", employees: 0, corridor: "SE Indiana / Ohio River (smallest county)"},
+  {county: "Switzerland, IN", fips: "18155", employees: 0, corridor: "SE Indiana / Ohio River"},
+  {county: "Jefferson, IN", fips: "18077", employees: 0, corridor: "SE Indiana / Ohio River"},
+  {county: "Ripley, IN", fips: "18137", employees: 0, corridor: "SE Indiana"},
+  {county: "Decatur, IN", fips: "18031", employees: 0, corridor: "SE Indiana / I-74"},
+  {county: "Franklin, IN", fips: "18047", employees: 0, corridor: "SE Indiana"},
+  {county: "Jennings, IN", fips: "18079", employees: 0, corridor: "SE Indiana"},
+  {county: "Floyd, IN", fips: "18043", employees: 0, corridor: "SE Indiana / Louisville metro"},
+  {county: "Brown, IN", fips: "18013", employees: 0, corridor: "SE Indiana"}
 ];
 
 const data = [...rawData].sort((a, b) => b.employees - a.employees);
@@ -76,15 +88,15 @@ const barTrace = {
 };
 
 Plotly.newPlot("chart", [barTrace], {
-  margin: {l: 140, r: 40, t: 20, b: 40},
+  margin: {l: 160, r: 40, t: 20, b: 40},
   xaxis: {title: "Manufacturing Employees"},
   yaxis: {autorange: "reversed"},
   paper_bgcolor: "white",
   plot_bgcolor: "#f8f9fa",
-  height: 700
+  height: 900
 }, {responsive: true});
 
-// Map: fetch geojson then plot
+// Map
 fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json")
   .then(r => r.json())
   .then(geojson => {
@@ -104,8 +116,8 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
     Plotly.newPlot("map", [mapTrace], {
       geo: {
         scope: "usa",
-        center: {lat: 39.2, lon: -85.0},
-        projection: {scale: 7.5},
+        center: {lat: 39.0, lon: -85.5},
+        projection: {scale: 8},
         showlakes: true,
         lakecolor: "lightblue"
       },

@@ -1,7 +1,81 @@
+<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8" /></head>
+<head>
+<meta charset="utf-8">
+<title>Manufacturing Employment — I-65/I-70 Corridor</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; background: #f8f9fa; }
+  h1 { font-size: 1.4rem; color: #1a1a1a; }
+  #chart { width: 100%; height: 900px; }
+  .note { color: #666; font-size: 0.9rem; margin-top: 10px; }
+</style>
+</head>
 <body>
-    <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>                <div id="bd5f8a8a-8a1e-4f5a-9c3d-1e2f3a4b5c6d" class="plotly-graph-div" style="height:700px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("bd5f8a8a-8a1e-4f5a-9c3d-1e2f3a4b5c6d")) {                    Plotly.newPlot(                        "bd5f8a8a-8a1e-4f5a-9c3d-1e2f3a4b5c6d",                        [{"colorscale":[[0,"#08306b"],[0.15,"#2171b5"],[0.35,"#6baed6"],[0.5,"#c6dbef"],[0.65,"#fee5d9"],[0.8,"#fcae91"],[0.9,"#fb6a4a"],[1,"#cb181d"]],"colorbar":{"title":{"text":"Mfg Employees"}},"customdata":[["Marion","IN","I-65/I-70"],["Johnson","IN","I-65"],["Shelby","IN","I-65/I-70"],["Bartholomew","IN","I-65"],["Jackson","IN","I-65"],["Scott","IN","I-65"],["Clark","IN","I-65"],["Washington","IN","I-65"],["Harrison","IN","I-65"],["Crawford","IN","I-65"],["Perry","IN","I-65"],["Hancock","IN","I-70"],["Rush","IN","I-70"],["Henry","IN","I-70"],["Wayne","IN","I-70"],["Preble","OH","I-70"],["Montgomery","OH","I-70/I-75 Dayton"],["Greene","OH","I-70"],["Clark","OH","I-70"],["Madison","OH","I-70"],["Fayette","OH","I-70"],["Clinton","OH","I-70/I-71"],["Butler","OH","I-75"],["Warren","OH","I-71/I-75"],["Hamilton","OH","Cincinnati I-71/I-75/I-275"],["Union","IN","I-74"],["Fayette","IN","I-74"],["Randolph","IN","I-69"],["Grant","IN","US-35"]],"geojson":"https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json","hovertemplate":"<b>%{customdata[0]} County, %{customdata[1]}</b><br>Mfg employees: %{z:,}<br>Corridor: %{customdata[2]}<extra></extra>","locationmode":"geojson-id","locations":["18097","18081","18145","18005","18071","18143","18019","18175","18061","18025","18123","18059","18139","18065","18177","39135","39113","39057","39023","39097","39047","39027","39017","39165","39061","18161","18041","18135","18053"],"marker":{"line":{"color":"white","width":0.5}},"type":"choropleth","z":[18500,6200,4800,14500,3100,1800,8900,2200,1500,400,900,3500,1200,2800,7200,2600,28000,6200,9800,2100,1300,2400,16500,9800,32000,600,1100,2000,5400]}],        {"layout":{"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#ef553b","#00cc96","#ab63fa","#ffa15a","#19d3f3","#ff6692","#b6e880","#ff97ff","#fecb52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]],"sequentialminus":[[0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"updatemenudefaults":{"bgcolor":"#EBF0F8","bordercolor":"#C8D4E3","borderwidth":1},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"#C8D4E3","borderwidth":1,"tickwidth":0,"tickcolor":"#C8D4E3"},"mapbox":{"style":"light"}},"title":{"text":"Manufacturing Employment Density \u2014 I-65 / I-70 Corridor<br>SE Indiana & SW Ohio (illustrative County Business Patterns-style values)"},"height":700,"margin":{"r":0,"t":60,"l":0,"b":0},"geo":{"center":{"lat":39.2,"lon":-85.0},"lakecolor":"lightblue","projection":{"scale":7.5},"scope":"usa","showlakes":true}},                        {"responsive": true}                    )                };            </script>        </div>
+<h1>Manufacturing Employment by County<br><small>I-65 / I-70 Corridor (SE Indiana & SW Ohio) — illustrative values</small></h1>
+<div id="chart"></div>
+<p class="note">Blue = lower density, red = higher. Data is placeholder-style for planning; real County Business Patterns can be swapped in later. Sorted highest to lowest.</p>
+<script>
+const data = [
+  {county: "Hamilton, OH", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
+  {county: "Montgomery, OH", employees: 28000, corridor: "I-70/I-75 Dayton"},
+  {county: "Marion, IN", employees: 18500, corridor: "I-65/I-70"},
+  {county: "Butler, OH", employees: 16500, corridor: "I-75"},
+  {county: "Bartholomew, IN", employees: 14500, corridor: "I-65"},
+  {county: "Clark, OH", employees: 9800, corridor: "I-70"},
+  {county: "Warren, OH", employees: 9800, corridor: "I-71/I-75"},
+  {county: "Clark, IN", employees: 8900, corridor: "I-65"},
+  {county: "Wayne, IN", employees: 7200, corridor: "I-70"},
+  {county: "Greene, OH", employees: 6200, corridor: "I-70"},
+  {county: "Johnson, IN", employees: 6200, corridor: "I-65"},
+  {county: "Grant, IN", employees: 5400, corridor: "US-35"},
+  {county: "Shelby, IN", employees: 4800, corridor: "I-65/I-70"},
+  {county: "Hancock, IN", employees: 3500, corridor: "I-70"},
+  {county: "Jackson, IN", employees: 3100, corridor: "I-65"},
+  {county: "Henry, IN", employees: 2800, corridor: "I-70"},
+  {county: "Preble, OH", employees: 2600, corridor: "I-70"},
+  {county: "Clinton, OH", employees: 2400, corridor: "I-70/I-71"},
+  {county: "Washington, IN", employees: 2200, corridor: "I-65"},
+  {county: "Madison, OH", employees: 2100, corridor: "I-70"},
+  {county: "Randolph, IN", employees: 2000, corridor: "I-69"},
+  {county: "Scott, IN", employees: 1800, corridor: "I-65"},
+  {county: "Harrison, IN", employees: 1500, corridor: "I-65"},
+  {county: "Fayette, OH", employees: 1300, corridor: "I-70"},
+  {county: "Rush, IN", employees: 1200, corridor: "I-70"},
+  {county: "Fayette, IN", employees: 1100, corridor: "I-74"},
+  {county: "Perry, IN", employees: 900, corridor: "I-65"},
+  {county: "Union, IN", employees: 600, corridor: "I-74"},
+  {county: "Crawford, IN", employees: 400, corridor: "I-65"}
+];
+
+data.sort((a, b) => b.employees - a.employees);
+
+const trace = {
+  type: "bar",
+  orientation: "h",
+  x: data.map(d => d.employees),
+  y: data.map(d => d.county),
+  marker: {
+    color: data.map(d => d.employees),
+    colorscale: [[0, "#08306b"], [0.3, "#6baed6"], [0.6, "#fee5d9"], [1, "#cb181d"]],
+    showscale: true,
+    colorbar: {title: "Employees"}
+  },
+  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
+  customdata: data.map(d => d.corridor)
+};
+
+const layout = {
+  title: "",
+  margin: {l: 140, r: 40, t: 20, b: 40},
+  xaxis: {title: "Manufacturing Employees"},
+  yaxis: {autorange: "reversed"},
+  paper_bgcolor: "white",
+  plot_bgcolor: "#f8f9fa",
+  height: 900
+};
+
+Plotly.newPlot("chart", [trace], layout, {responsive: true});
+</script>
 </body>
 </html>

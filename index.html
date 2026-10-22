@@ -14,19 +14,18 @@
 </style>
 </head>
 <body>
-<h1>Manufacturing Employment<br><small>SE Indiana (I-65/I-70 constrained) + SW Ohio — BLS QCEW July 2024 (private payroll)</small></h1>
+<h1>Manufacturing Employment + Customer Coverage<br><small>SE Indiana (I-65/I-70 constrained) + SW Ohio — BLS QCEW July 2024</small></h1>
 
 <h2>Bar Chart (sorted highest to lowest)</h2>
 <div id="chart"></div>
-<p class="note">Orange = major metro outliers (Marion IN, Hamilton OH, Montgomery OH) excluded from color scale. Remaining counties: red = highest (4th overall), blue = lowest. SE Indiana uses real BLS QCEW data.</p>
+<p class="note">Orange = major metro outliers (Marion IN, Hamilton OH, Montgomery OH) excluded from color scale. Remaining counties: red = highest (4th overall), blue = lowest.</p>
 
 <h2>County Choropleth Map</h2>
 <div id="map"></div>
-<p class="note">Orange counties are the top three (excluded from the main color scale for better definition on the rest). Color scale for remaining counties runs from red (largest of the group) to blue (smallest). Hover for details.</p>
+<p class="note">Labels show <strong>customers / customers per 1,000 mfg employees</strong> (coverage density). Orange counties are the top three (excluded from the main color scale). Color scale for remaining counties runs from red (largest of the group) to blue (smallest). Hover for full details.</p>
 
 <script>
 const rawData = [
-  // Prior high-value ones (Ohio estimates; IN updated where available)
   {county: "Hamilton, OH", fips: "39061", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
   {county: "Montgomery, OH", fips: "39113", employees: 28000, corridor: "I-70/I-75 Dayton"},
   {county: "Marion, IN", fips: "18097", employees: 56476, corridor: "I-65/I-70"},
@@ -56,7 +55,6 @@ const rawData = [
   {county: "Perry, IN", fips: "18123", employees: 2123, corridor: "I-65"},
   {county: "Union, IN", fips: "18161", employees: 600, corridor: "I-74"},
   {county: "Crawford, IN", fips: "18025", employees: 400, corridor: "I-65"},
-  // Expanded SE Indiana counties (I-65/I-70 constrained) — real July 2024 QCEW
   {county: "Dearborn, IN", fips: "18029", employees: 2023, corridor: "SE Indiana / Ohio River"},
   {county: "Ohio, IN", fips: "18115", employees: 36, corridor: "SE Indiana / Ohio River (smallest county)"},
   {county: "Switzerland, IN", fips: "18155", employees: 124, corridor: "SE Indiana / Ohio River"},
@@ -69,56 +67,45 @@ const rawData = [
   {county: "Brown, IN", fips: "18013", employees: 160, corridor: "SE Indiana"}
 ];
 
+// Customer counts from cleaned VEI list (ZIP → county)
+const customerCounts = {
+  "18071": 38, "18019": 35, "18005": 23, "18139": 16, "18079": 15,
+  "18081": 11, "18097": 11, "18013": 10, "18041": 10, "18143": 10,
+  "18077": 9, "39061": 7, "18043": 6, "18061": 6, "18137": 6,
+  "18175": 6, "18029": 5, "18155": 5, "18047": 3, "18059": 3,
+  "18031": 2, "18065": 2, "18115": 2, "18123": 1, "18145": 1,
+  "18177": 1, "39057": 1, "39165": 1
+};
+
+// Enrich data with customer metrics
+rawData.forEach(d => {
+  d.customers = customerCounts[d.fips] || 0;
+  d.per1k = d.employees > 0 ? +(d.customers / d.employees * 1000).toFixed(1) : 0;
+  d.label = d.customers > 0 ? `${d.customers} / ${d.per1k}` : "";
+});
+
 const data = [...rawData].sort((a, b) => b.employees - a.employees);
 
-// Identify the three orange outliers
 const orangeCounties = new Set(["Marion, IN", "Hamilton, OH", "Montgomery, OH"]);
 const normalData = data.filter(d => !orangeCounties.has(d.county));
 const orangeData = data.filter(d => orangeCounties.has(d.county));
 
-// Color scale for normal counties: red (max of normal) to blue (min)
 const normalEmployees = normalData.map(d => d.employees);
 const zmin = Math.min(...normalEmployees);
 const zmax = Math.max(...normalEmployees);
 
-// Custom colorscale: blue (low) -> red (high) with more definition
 const colorscale = [
-  [0, "#08306b"],   // dark blue
+  [0, "#08306b"],
   [0.15, "#2171b5"],
   [0.3, "#6baed6"],
   [0.45, "#c6dbef"],
   [0.55, "#fee5d9"],
   [0.7, "#fcae91"],
   [0.85, "#fb6a4a"],
-  [1, "#cb181d"]    // red
+  [1, "#cb181d"]
 ];
 
-// Bar chart with mixed colors
-const barTrace = {
-  type: "bar",
-  orientation: "h",
-  x: data.map(d => d.employees),
-  y: data.map(d => d.county),
-  marker: {
-    color: data.map(d => {
-      if (orangeCounties.has(d.county)) return "#ff7f0e"; // orange
-      // Map employee value to colorscale position for normal ones
-      const norm = (d.employees - zmin) / (zmax - zmin);
-      // Approximate color from scale (simple linear interpolation not needed for bars; use discrete or just scale)
-      return d.employees; // will use colorscale below
-    }),
-    colorscale: colorscale,
-    cmin: zmin,
-    cmax: zmax,
-    showscale: true,
-    colorbar: {title: "Employees (excl. outliers)"},
-    // Override for orange: Plotly doesn't easily mix, so we use two traces instead for cleanliness
-  },
-  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
-  customdata: data.map(d => d.corridor)
-};
-
-// Better: two bar traces
+// Bar chart
 const normalBar = {
   type: "bar",
   orientation: "h",
@@ -132,8 +119,8 @@ const normalBar = {
     showscale: true,
     colorbar: {title: "Employees"}
   },
-  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
-  customdata: normalData.map(d => d.corridor),
+  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Customers: %{customdata[0]}<br>Per 1k employees: %{customdata[1]}<br>Corridor: %{customdata[2]}<extra></extra>",
+  customdata: normalData.map(d => [d.customers, d.per1k, d.corridor]),
   name: "Counties"
 };
 
@@ -143,8 +130,8 @@ const orangeBar = {
   x: orangeData.map(d => d.employees),
   y: orangeData.map(d => d.county),
   marker: {color: "#ff7f0e"},
-  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
-  customdata: orangeData.map(d => d.corridor),
+  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Customers: %{customdata[0]}<br>Per 1k employees: %{customdata[1]}<br>Corridor: %{customdata[2]}<extra></extra>",
+  customdata: orangeData.map(d => [d.customers, d.per1k, d.corridor]),
   name: "Major metros (orange)",
   showlegend: true
 };
@@ -159,22 +146,35 @@ Plotly.newPlot("chart", [normalBar, orangeBar], {
   barmode: "overlay"
 }, {responsive: true});
 
-// Map
+// Map with labels
 fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json")
   .then(r => r.json())
   .then(geojson => {
+    // Compute simple centroids for labeled counties
+    const fipsToCentroid = {};
+    geojson.features.forEach(f => {
+      const fips = f.id;
+      if (!customerCounts[fips]) return;
+      const coords = f.geometry.type === "Polygon"
+        ? f.geometry.coordinates[0]
+        : f.geometry.coordinates[0][0]; // MultiPolygon first ring
+      let lon = 0, lat = 0;
+      coords.forEach(c => { lon += c[0]; lat += c[1]; });
+      fipsToCentroid[fips] = { lon: lon / coords.length, lat: lat / coords.length };
+    });
+
     const normalMap = {
       type: "choropleth",
       geojson: geojson,
       locations: normalData.map(d => d.fips),
       z: normalData.map(d => d.employees),
       text: normalData.map(d => d.county),
-      customdata: normalData.map(d => d.corridor),
+      customdata: normalData.map(d => [d.customers, d.per1k, d.corridor]),
       colorscale: colorscale,
       zmin: zmin,
       zmax: zmax,
       colorbar: {title: "Mfg Employees"},
-      hovertemplate: "<b>%{text}</b><br>Employees: %{z:,}<br>%{customdata}<extra></extra>",
+      hovertemplate: "<b>%{text}</b><br>Employees: %{z:,}<br>Customers: %{customdata[0]}<br>Per 1k emp: %{customdata[1]}<br>%{customdata[2]}<extra></extra>",
       marker: {line: {color: "white", width: 0.5}},
       name: "Counties"
     };
@@ -183,21 +183,30 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       type: "choropleth",
       geojson: geojson,
       locations: orangeData.map(d => d.fips),
-      z: orangeData.map(d => 1), // dummy
+      z: orangeData.map(() => 1),
       text: orangeData.map(d => d.county),
-      customdata: orangeData.map(d => d.corridor),
+      customdata: orangeData.map(d => [d.employees, d.customers, d.per1k, d.corridor]),
       colorscale: [[0, "#ff7f0e"], [1, "#ff7f0e"]],
       showscale: false,
-      hovertemplate: "<b>%{text}</b><br>Employees: " + orangeData.map(d => d.employees.toLocaleString()).join(", ") + " (orange outlier)<br>%{customdata}<extra></extra>",
+      hovertemplate: "<b>%{text}</b><br>Employees: %{customdata[0]:,}<br>Customers: %{customdata[1]}<br>Per 1k emp: %{customdata[2]}<br>%{customdata[3]}<extra></extra>",
       marker: {line: {color: "white", width: 0.5}},
       name: "Major metros"
     };
 
-    // Fix hover for orange - better to compute properly
-    orangeMap.hovertemplate = "<b>%{text}</b><br>Employees: %{customdata[0]:,}<br>%{customdata[1]}<extra></extra>";
-    orangeMap.customdata = orangeData.map(d => [d.employees, d.corridor]);
+    // Text labels for counties with customers
+    const labelData = rawData.filter(d => d.customers > 0 && fipsToCentroid[d.fips]);
+    const labelTrace = {
+      type: "scattergeo",
+      lon: labelData.map(d => fipsToCentroid[d.fips].lon),
+      lat: labelData.map(d => fipsToCentroid[d.fips].lat),
+      text: labelData.map(d => d.label),
+      mode: "text",
+      textfont: {size: 10, color: "#222", family: "system-ui"},
+      hoverinfo: "skip",
+      showlegend: false
+    };
 
-    Plotly.newPlot("map", [normalMap, orangeMap], {
+    Plotly.newPlot("map", [normalMap, orangeMap, labelTrace], {
       geo: {
         scope: "usa",
         center: {lat: 39.0, lon: -85.5},

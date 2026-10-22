@@ -193,19 +193,18 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       name: "Major metros"
     };
 
-    // Text labels for counties with customers — white halo + dark text for readability
+    // Text labels — stacked white layers for a solid box-like background + bold black text
     const labelData = rawData.filter(d => d.customers > 0 && fipsToCentroid[d.fips]);
 
-    const labelHalo = {
+    const labelBg = {
       type: "scattergeo",
       lon: labelData.map(d => fipsToCentroid[d.fips].lon),
       lat: labelData.map(d => fipsToCentroid[d.fips].lat),
       text: labelData.map(d => d.label),
       mode: "text",
-      textfont: {size: 16, color: "white", family: "system-ui, sans-serif"},
+      textfont: {size: 20, color: "white", family: "system-ui, sans-serif"},
       hoverinfo: "skip",
-      showlegend: false,
-      name: "label-halo"
+      showlegend: false
     };
 
     const labelTrace = {
@@ -214,12 +213,12 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       lat: labelData.map(d => fipsToCentroid[d.fips].lat),
       text: labelData.map(d => d.label),
       mode: "text",
-      textfont: {size: 13, color: "#111", family: "system-ui, sans-serif", weight: 700},
+      textfont: {size: 14, color: "#111", family: "system-ui, sans-serif", weight: 700},
       hoverinfo: "skip",
       showlegend: false
     };
 
-    Plotly.newPlot("map", [normalMap, orangeMap, labelHalo, labelTrace], {
+    Plotly.newPlot("map", [normalMap, orangeMap, labelBg, labelTrace], {
       geo: {
         scope: "usa",
         center: {lat: 39.0, lon: -85.5},

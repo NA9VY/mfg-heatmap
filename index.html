@@ -193,19 +193,8 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       name: "Major metros"
     };
 
-    // Text labels — stacked white layers for a solid box-like background + bold black text
+    // Text labels (will add solid white boxes after render)
     const labelData = rawData.filter(d => d.customers > 0 && fipsToCentroid[d.fips]);
-
-    const labelBg = {
-      type: "scattergeo",
-      lon: labelData.map(d => fipsToCentroid[d.fips].lon),
-      lat: labelData.map(d => fipsToCentroid[d.fips].lat),
-      text: labelData.map(d => d.label),
-      mode: "text",
-      textfont: {size: 20, color: "white", family: "system-ui, sans-serif"},
-      hoverinfo: "skip",
-      showlegend: false
-    };
 
     const labelTrace = {
       type: "scattergeo",
@@ -213,12 +202,12 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       lat: labelData.map(d => fipsToCentroid[d.fips].lat),
       text: labelData.map(d => d.label),
       mode: "text",
-      textfont: {size: 14, color: "#111", family: "system-ui, sans-serif", weight: 700},
+      textfont: {size: 13, color: "#111", family: "system-ui, sans-serif", weight: 700},
       hoverinfo: "skip",
       showlegend: false
     };
 
-    Plotly.newPlot("map", [normalMap, orangeMap, labelBg, labelTrace], {
+    Plotly.newPlot("map", [normalMap, orangeMap, labelTrace], {
       geo: {
         scope: "usa",
         center: {lat: 39.0, lon: -85.5},
@@ -228,7 +217,28 @@ fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties
       },
       margin: {r: 0, t: 20, l: 0, b: 0},
       height: 600
-    }, {responsive: true});
+    }, {responsive: true}).then(function() {
+      // Post-render: add solid white rounded rectangles behind each label text
+      const svg = document.querySelector('#map .main-svg');
+      if (!svg) return;
+      const texts = svg.querySelectorAll('g.scatterlayer text');
+      texts.forEach(textEl => {
+        if (!textEl.textContent || !textEl.textContent.includes('/')) return;
+        const bbox = textEl.getBBox();
+        const padX = 6, padY = 3;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', bbox.x - padX);
+        rect.setAttribute('y', bbox.y - padY);
+        rect.setAttribute('width', bbox.width + padX * 2);
+        rect.setAttribute('height', bbox.height + padY * 2);
+        rect.setAttribute('fill', 'white');
+        rect.setAttribute('stroke', '#ccc');
+        rect.setAttribute('stroke-width', '0.5');
+        rect.setAttribute('rx', '3');
+        rect.setAttribute('ry', '3');
+        textEl.parentNode.insertBefore(rect, textEl);
+      });
+    });
   })
   .catch(err => {
     document.getElementById("map").innerHTML = "<p style='color:red'>Map failed to load: " + err + "</p>";

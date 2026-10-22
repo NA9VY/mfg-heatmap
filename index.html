@@ -7,50 +7,60 @@
 <style>
   body { font-family: system-ui, sans-serif; margin: 20px; background: #f8f9fa; }
   h1 { font-size: 1.4rem; color: #1a1a1a; }
-  #chart { width: 100%; height: 900px; }
+  h2 { font-size: 1.2rem; margin-top: 40px; }
+  #chart { width: 100%; height: 700px; }
+  #map { width: 100%; height: 600px; }
   .note { color: #666; font-size: 0.9rem; margin-top: 10px; }
 </style>
 </head>
 <body>
-<h1>Manufacturing Employment by County<br><small>I-65 / I-70 Corridor (SE Indiana & SW Ohio) — illustrative values</small></h1>
+<h1>Manufacturing Employment<br><small>I-65 / I-70 Corridor (SE Indiana & SW Ohio) — illustrative values</small></h1>
+
+<h2>Bar Chart (sorted highest to lowest)</h2>
 <div id="chart"></div>
-<p class="note">Blue = lower density, red = higher. Data is placeholder-style for planning; real County Business Patterns can be swapped in later. Sorted highest to lowest.</p>
+<p class="note">Blue = lower, red = higher. Placeholder data for planning.</p>
+
+<h2>County Choropleth Map</h2>
+<div id="map"></div>
+<p class="note">Same data. Hover for details. Map loads after fetching county boundaries.</p>
+
 <script>
-const data = [
-  {county: "Hamilton, OH", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
-  {county: "Montgomery, OH", employees: 28000, corridor: "I-70/I-75 Dayton"},
-  {county: "Marion, IN", employees: 18500, corridor: "I-65/I-70"},
-  {county: "Butler, OH", employees: 16500, corridor: "I-75"},
-  {county: "Bartholomew, IN", employees: 14500, corridor: "I-65"},
-  {county: "Clark, OH", employees: 9800, corridor: "I-70"},
-  {county: "Warren, OH", employees: 9800, corridor: "I-71/I-75"},
-  {county: "Clark, IN", employees: 8900, corridor: "I-65"},
-  {county: "Wayne, IN", employees: 7200, corridor: "I-70"},
-  {county: "Greene, OH", employees: 6200, corridor: "I-70"},
-  {county: "Johnson, IN", employees: 6200, corridor: "I-65"},
-  {county: "Grant, IN", employees: 5400, corridor: "US-35"},
-  {county: "Shelby, IN", employees: 4800, corridor: "I-65/I-70"},
-  {county: "Hancock, IN", employees: 3500, corridor: "I-70"},
-  {county: "Jackson, IN", employees: 3100, corridor: "I-65"},
-  {county: "Henry, IN", employees: 2800, corridor: "I-70"},
-  {county: "Preble, OH", employees: 2600, corridor: "I-70"},
-  {county: "Clinton, OH", employees: 2400, corridor: "I-70/I-71"},
-  {county: "Washington, IN", employees: 2200, corridor: "I-65"},
-  {county: "Madison, OH", employees: 2100, corridor: "I-70"},
-  {county: "Randolph, IN", employees: 2000, corridor: "I-69"},
-  {county: "Scott, IN", employees: 1800, corridor: "I-65"},
-  {county: "Harrison, IN", employees: 1500, corridor: "I-65"},
-  {county: "Fayette, OH", employees: 1300, corridor: "I-70"},
-  {county: "Rush, IN", employees: 1200, corridor: "I-70"},
-  {county: "Fayette, IN", employees: 1100, corridor: "I-74"},
-  {county: "Perry, IN", employees: 900, corridor: "I-65"},
-  {county: "Union, IN", employees: 600, corridor: "I-74"},
-  {county: "Crawford, IN", employees: 400, corridor: "I-65"}
+const rawData = [
+  {county: "Hamilton, OH", fips: "39061", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
+  {county: "Montgomery, OH", fips: "39113", employees: 28000, corridor: "I-70/I-75 Dayton"},
+  {county: "Marion, IN", fips: "18097", employees: 18500, corridor: "I-65/I-70"},
+  {county: "Butler, OH", fips: "39017", employees: 16500, corridor: "I-75"},
+  {county: "Bartholomew, IN", fips: "18005", employees: 14500, corridor: "I-65"},
+  {county: "Clark, OH", fips: "39023", employees: 9800, corridor: "I-70"},
+  {county: "Warren, OH", fips: "39165", employees: 9800, corridor: "I-71/I-75"},
+  {county: "Clark, IN", fips: "18019", employees: 8900, corridor: "I-65"},
+  {county: "Wayne, IN", fips: "18177", employees: 7200, corridor: "I-70"},
+  {county: "Greene, OH", fips: "39057", employees: 6200, corridor: "I-70"},
+  {county: "Johnson, IN", fips: "18081", employees: 6200, corridor: "I-65"},
+  {county: "Grant, IN", fips: "18053", employees: 5400, corridor: "US-35"},
+  {county: "Shelby, IN", fips: "18145", employees: 4800, corridor: "I-65/I-70"},
+  {county: "Hancock, IN", fips: "18059", employees: 3500, corridor: "I-70"},
+  {county: "Jackson, IN", fips: "18071", employees: 3100, corridor: "I-65"},
+  {county: "Henry, IN", fips: "18065", employees: 2800, corridor: "I-70"},
+  {county: "Preble, OH", fips: "39135", employees: 2600, corridor: "I-70"},
+  {county: "Clinton, OH", fips: "39027", employees: 2400, corridor: "I-70/I-71"},
+  {county: "Washington, IN", fips: "18175", employees: 2200, corridor: "I-65"},
+  {county: "Madison, OH", fips: "39097", employees: 2100, corridor: "I-70"},
+  {county: "Randolph, IN", fips: "18135", employees: 2000, corridor: "I-69"},
+  {county: "Scott, IN", fips: "18143", employees: 1800, corridor: "I-65"},
+  {county: "Harrison, IN", fips: "18061", employees: 1500, corridor: "I-65"},
+  {county: "Fayette, OH", fips: "39047", employees: 1300, corridor: "I-70"},
+  {county: "Rush, IN", fips: "18139", employees: 1200, corridor: "I-70"},
+  {county: "Fayette, IN", fips: "18041", employees: 1100, corridor: "I-74"},
+  {county: "Perry, IN", fips: "18123", employees: 900, corridor: "I-65"},
+  {county: "Union, IN", fips: "18161", employees: 600, corridor: "I-74"},
+  {county: "Crawford, IN", fips: "18025", employees: 400, corridor: "I-65"}
 ];
 
-data.sort((a, b) => b.employees - a.employees);
+const data = [...rawData].sort((a, b) => b.employees - a.employees);
 
-const trace = {
+// Bar chart
+const barTrace = {
   type: "bar",
   orientation: "h",
   x: data.map(d => d.employees),
@@ -65,17 +75,47 @@ const trace = {
   customdata: data.map(d => d.corridor)
 };
 
-const layout = {
-  title: "",
+Plotly.newPlot("chart", [barTrace], {
   margin: {l: 140, r: 40, t: 20, b: 40},
   xaxis: {title: "Manufacturing Employees"},
   yaxis: {autorange: "reversed"},
   paper_bgcolor: "white",
   plot_bgcolor: "#f8f9fa",
-  height: 900
-};
+  height: 700
+}, {responsive: true});
 
-Plotly.newPlot("chart", [trace], layout, {responsive: true});
+// Map: fetch geojson then plot
+fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json")
+  .then(r => r.json())
+  .then(geojson => {
+    const mapTrace = {
+      type: "choropleth",
+      geojson: geojson,
+      locations: rawData.map(d => d.fips),
+      z: rawData.map(d => d.employees),
+      text: rawData.map(d => d.county),
+      customdata: rawData.map(d => d.corridor),
+      colorscale: [[0, "#08306b"], [0.15, "#2171b5"], [0.35, "#6baed6"], [0.5, "#c6dbef"], [0.65, "#fee5d9"], [0.8, "#fcae91"], [0.9, "#fb6a4a"], [1, "#cb181d"]],
+      colorbar: {title: "Mfg Employees"},
+      hovertemplate: "<b>%{text}</b><br>Employees: %{z:,}<br>%{customdata}<extra></extra>",
+      marker: {line: {color: "white", width: 0.5}}
+    };
+
+    Plotly.newPlot("map", [mapTrace], {
+      geo: {
+        scope: "usa",
+        center: {lat: 39.2, lon: -85.0},
+        projection: {scale: 7.5},
+        showlakes: true,
+        lakecolor: "lightblue"
+      },
+      margin: {r: 0, t: 20, l: 0, b: 0},
+      height: 600
+    }, {responsive: true});
+  })
+  .catch(err => {
+    document.getElementById("map").innerHTML = "<p style='color:red'>Map failed to load: " + err + "</p>";
+  });
 </script>
 </body>
 </html>

@@ -18,11 +18,11 @@
 
 <h2>Bar Chart (sorted highest to lowest)</h2>
 <div id="chart"></div>
-<p class="note">Blue = lower, red = higher. SE Indiana counties use real BLS QCEW manufacturing employment (NAICS 31-33). Ohio corridor values remain prior estimates pending exact pull.</p>
+<p class="note">Orange = major metro outliers (Marion IN, Hamilton OH, Montgomery OH) excluded from color scale. Remaining counties: red = highest (4th overall), blue = lowest. SE Indiana uses real BLS QCEW data.</p>
 
 <h2>County Choropleth Map</h2>
 <div id="map"></div>
-<p class="note">All SE Indiana counties bounded by I-65 & I-70 plus prior SW Ohio ones. Hover for details. Source: BLS QCEW July 2024 for Indiana counties.</p>
+<p class="note">Orange counties are the top three (excluded from the main color scale for better definition on the rest). Color scale for remaining counties runs from red (largest of the group) to blue (smallest). Hover for details.</p>
 
 <script>
 const rawData = [
@@ -71,49 +71,133 @@ const rawData = [
 
 const data = [...rawData].sort((a, b) => b.employees - a.employees);
 
-// Bar chart
+// Identify the three orange outliers
+const orangeCounties = new Set(["Marion, IN", "Hamilton, OH", "Montgomery, OH"]);
+const normalData = data.filter(d => !orangeCounties.has(d.county));
+const orangeData = data.filter(d => orangeCounties.has(d.county));
+
+// Color scale for normal counties: red (max of normal) to blue (min)
+const normalEmployees = normalData.map(d => d.employees);
+const zmin = Math.min(...normalEmployees);
+const zmax = Math.max(...normalEmployees);
+
+// Custom colorscale: blue (low) -> red (high) with more definition
+const colorscale = [
+  [0, "#08306b"],   // dark blue
+  [0.15, "#2171b5"],
+  [0.3, "#6baed6"],
+  [0.45, "#c6dbef"],
+  [0.55, "#fee5d9"],
+  [0.7, "#fcae91"],
+  [0.85, "#fb6a4a"],
+  [1, "#cb181d"]    // red
+];
+
+// Bar chart with mixed colors
 const barTrace = {
   type: "bar",
   orientation: "h",
   x: data.map(d => d.employees),
   y: data.map(d => d.county),
   marker: {
-    color: data.map(d => d.employees),
-    colorscale: [[0, "#08306b"], [0.3, "#6baed6"], [0.6, "#fee5d9"], [1, "#cb181d"]],
+    color: data.map(d => {
+      if (orangeCounties.has(d.county)) return "#ff7f0e"; // orange
+      // Map employee value to colorscale position for normal ones
+      const norm = (d.employees - zmin) / (zmax - zmin);
+      // Approximate color from scale (simple linear interpolation not needed for bars; use discrete or just scale)
+      return d.employees; // will use colorscale below
+    }),
+    colorscale: colorscale,
+    cmin: zmin,
+    cmax: zmax,
     showscale: true,
-    colorbar: {title: "Employees"}
+    colorbar: {title: "Employees (excl. outliers)"},
+    // Override for orange: Plotly doesn't easily mix, so we use two traces instead for cleanliness
   },
   hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
   customdata: data.map(d => d.corridor)
 };
 
-Plotly.newPlot("chart", [barTrace], {
+// Better: two bar traces
+const normalBar = {
+  type: "bar",
+  orientation: "h",
+  x: normalData.map(d => d.employees),
+  y: normalData.map(d => d.county),
+  marker: {
+    color: normalData.map(d => d.employees),
+    colorscale: colorscale,
+    cmin: zmin,
+    cmax: zmax,
+    showscale: true,
+    colorbar: {title: "Employees"}
+  },
+  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
+  customdata: normalData.map(d => d.corridor),
+  name: "Counties"
+};
+
+const orangeBar = {
+  type: "bar",
+  orientation: "h",
+  x: orangeData.map(d => d.employees),
+  y: orangeData.map(d => d.county),
+  marker: {color: "#ff7f0e"},
+  hovertemplate: "<b>%{y}</b><br>Mfg employees: %{x:,}<br>Corridor: %{customdata}<extra></extra>",
+  customdata: orangeData.map(d => d.corridor),
+  name: "Major metros (orange)",
+  showlegend: true
+};
+
+Plotly.newPlot("chart", [normalBar, orangeBar], {
   margin: {l: 160, r: 40, t: 20, b: 40},
   xaxis: {title: "Manufacturing Employees"},
   yaxis: {autorange: "reversed"},
   paper_bgcolor: "white",
   plot_bgcolor: "#f8f9fa",
-  height: 900
+  height: 900,
+  barmode: "overlay"
 }, {responsive: true});
 
 // Map
 fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json")
   .then(r => r.json())
   .then(geojson => {
-    const mapTrace = {
+    const normalMap = {
       type: "choropleth",
       geojson: geojson,
-      locations: rawData.map(d => d.fips),
-      z: rawData.map(d => d.employees),
-      text: rawData.map(d => d.county),
-      customdata: rawData.map(d => d.corridor),
-      colorscale: [[0, "#08306b"], [0.15, "#2171b5"], [0.35, "#6baed6"], [0.5, "#c6dbef"], [0.65, "#fee5d9"], [0.8, "#fcae91"], [0.9, "#fb6a4a"], [1, "#cb181d"]],
+      locations: normalData.map(d => d.fips),
+      z: normalData.map(d => d.employees),
+      text: normalData.map(d => d.county),
+      customdata: normalData.map(d => d.corridor),
+      colorscale: colorscale,
+      zmin: zmin,
+      zmax: zmax,
       colorbar: {title: "Mfg Employees"},
       hovertemplate: "<b>%{text}</b><br>Employees: %{z:,}<br>%{customdata}<extra></extra>",
-      marker: {line: {color: "white", width: 0.5}}
+      marker: {line: {color: "white", width: 0.5}},
+      name: "Counties"
     };
 
-    Plotly.newPlot("map", [mapTrace], {
+    const orangeMap = {
+      type: "choropleth",
+      geojson: geojson,
+      locations: orangeData.map(d => d.fips),
+      z: orangeData.map(d => 1), // dummy
+      text: orangeData.map(d => d.county),
+      customdata: orangeData.map(d => d.corridor),
+      colorscale: [[0, "#ff7f0e"], [1, "#ff7f0e"]],
+      showscale: false,
+      hovertemplate: "<b>%{text}</b><br>Employees: " + orangeData.map(d => d.employees.toLocaleString()).join(", ") + " (orange outlier)<br>%{customdata}<extra></extra>",
+      marker: {line: {color: "white", width: 0.5}},
+      name: "Major metros"
+    };
+
+    // Fix hover for orange - better to compute properly
+    orangeMap.hovertemplate = "<b>%{text}</b><br>Employees: %{customdata[0]:,}<br>%{customdata[1]}<extra></extra>";
+    orangeMap.customdata = orangeData.map(d => [d.employees, d.corridor]);
+
+    Plotly.newPlot("map", [normalMap, orangeMap], {
       geo: {
         scope: "usa",
         center: {lat: 39.0, lon: -85.5},

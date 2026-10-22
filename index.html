@@ -14,59 +14,59 @@
 </style>
 </head>
 <body>
-<h1>Manufacturing Employment<br><small>SE Indiana (I-65/I-70 constrained) + SW Ohio — illustrative values</small></h1>
+<h1>Manufacturing Employment<br><small>SE Indiana (I-65/I-70 constrained) + SW Ohio — BLS QCEW July 2024 (private payroll)</small></h1>
 
 <h2>Bar Chart (sorted highest to lowest)</h2>
 <div id="chart"></div>
-<p class="note">Blue = lower, red = higher. Counties with 0 are included for completeness (no prior estimate). Placeholder data for planning.</p>
+<p class="note">Blue = lower, red = higher. SE Indiana counties use real BLS QCEW manufacturing employment (NAICS 31-33). Ohio corridor values remain prior estimates pending exact pull.</p>
 
 <h2>County Choropleth Map</h2>
 <div id="map"></div>
-<p class="note">All SE Indiana counties bounded by I-65 & I-70 (Ohio, Dearborn, Switzerland, Jefferson, Ripley, etc.) plus prior SW Ohio ones. Hover for details.</p>
+<p class="note">All SE Indiana counties bounded by I-65 & I-70 plus prior SW Ohio ones. Hover for details. Source: BLS QCEW July 2024 for Indiana counties.</p>
 
 <script>
 const rawData = [
-  // Prior high-value ones
+  // Prior high-value ones (Ohio estimates; IN updated where available)
   {county: "Hamilton, OH", fips: "39061", employees: 32000, corridor: "Cincinnati I-71/I-75/I-275"},
   {county: "Montgomery, OH", fips: "39113", employees: 28000, corridor: "I-70/I-75 Dayton"},
-  {county: "Marion, IN", fips: "18097", employees: 18500, corridor: "I-65/I-70"},
+  {county: "Marion, IN", fips: "18097", employees: 56476, corridor: "I-65/I-70"},
   {county: "Butler, OH", fips: "39017", employees: 16500, corridor: "I-75"},
-  {county: "Bartholomew, IN", fips: "18005", employees: 14500, corridor: "I-65"},
+  {county: "Bartholomew, IN", fips: "18005", employees: 19414, corridor: "I-65"},
   {county: "Clark, OH", fips: "39023", employees: 9800, corridor: "I-70"},
   {county: "Warren, OH", fips: "39165", employees: 9800, corridor: "I-71/I-75"},
-  {county: "Clark, IN", fips: "18019", employees: 8900, corridor: "I-65"},
-  {county: "Wayne, IN", fips: "18177", employees: 7200, corridor: "I-70"},
+  {county: "Clark, IN", fips: "18019", employees: 7346, corridor: "I-65"},
+  {county: "Wayne, IN", fips: "18177", employees: 5827, corridor: "I-70"},
   {county: "Greene, OH", fips: "39057", employees: 6200, corridor: "I-70"},
-  {county: "Johnson, IN", fips: "18081", employees: 6200, corridor: "I-65"},
-  {county: "Grant, IN", fips: "18053", employees: 5400, corridor: "US-35"},
-  {county: "Shelby, IN", fips: "18145", employees: 4800, corridor: "I-65/I-70"},
-  {county: "Hancock, IN", fips: "18059", employees: 3500, corridor: "I-70"},
-  {county: "Jackson, IN", fips: "18071", employees: 3100, corridor: "I-65"},
-  {county: "Henry, IN", fips: "18065", employees: 2800, corridor: "I-70"},
+  {county: "Johnson, IN", fips: "18081", employees: 5811, corridor: "I-65"},
+  {county: "Grant, IN", fips: "18053", employees: 4658, corridor: "US-35"},
+  {county: "Shelby, IN", fips: "18145", employees: 4903, corridor: "I-65/I-70"},
+  {county: "Hancock, IN", fips: "18059", employees: 5116, corridor: "I-70"},
+  {county: "Jackson, IN", fips: "18071", employees: 6756, corridor: "I-65"},
+  {county: "Henry, IN", fips: "18065", employees: 3266, corridor: "I-70"},
   {county: "Preble, OH", fips: "39135", employees: 2600, corridor: "I-70"},
   {county: "Clinton, OH", fips: "39027", employees: 2400, corridor: "I-70/I-71"},
-  {county: "Washington, IN", fips: "18175", employees: 2200, corridor: "I-65"},
+  {county: "Washington, IN", fips: "18175", employees: 1187, corridor: "I-65"},
   {county: "Madison, OH", fips: "39097", employees: 2100, corridor: "I-70"},
-  {county: "Randolph, IN", fips: "18135", employees: 2000, corridor: "I-69"},
-  {county: "Scott, IN", fips: "18143", employees: 1800, corridor: "I-65"},
-  {county: "Harrison, IN", fips: "18061", employees: 1500, corridor: "I-65"},
+  {county: "Randolph, IN", fips: "18135", employees: 1369, corridor: "I-69"},
+  {county: "Scott, IN", fips: "18143", employees: 2530, corridor: "I-65"},
+  {county: "Harrison, IN", fips: "18061", employees: 1175, corridor: "I-65"},
   {county: "Fayette, OH", fips: "39047", employees: 1300, corridor: "I-70"},
-  {county: "Rush, IN", fips: "18139", employees: 1200, corridor: "I-70"},
-  {county: "Fayette, IN", fips: "18041", employees: 1100, corridor: "I-74"},
-  {county: "Perry, IN", fips: "18123", employees: 900, corridor: "I-65"},
+  {county: "Rush, IN", fips: "18139", employees: 1013, corridor: "I-70"},
+  {county: "Fayette, IN", fips: "18041", employees: 1142, corridor: "I-74"},
+  {county: "Perry, IN", fips: "18123", employees: 2123, corridor: "I-65"},
   {county: "Union, IN", fips: "18161", employees: 600, corridor: "I-74"},
   {county: "Crawford, IN", fips: "18025", employees: 400, corridor: "I-65"},
-  // Expanded SE Indiana counties (I-65/I-70 constrained)
-  {county: "Dearborn, IN", fips: "18029", employees: 0, corridor: "SE Indiana / Ohio River"},
-  {county: "Ohio, IN", fips: "18115", employees: 0, corridor: "SE Indiana / Ohio River (smallest county)"},
-  {county: "Switzerland, IN", fips: "18155", employees: 0, corridor: "SE Indiana / Ohio River"},
-  {county: "Jefferson, IN", fips: "18077", employees: 0, corridor: "SE Indiana / Ohio River"},
-  {county: "Ripley, IN", fips: "18137", employees: 0, corridor: "SE Indiana"},
-  {county: "Decatur, IN", fips: "18031", employees: 0, corridor: "SE Indiana / I-74"},
-  {county: "Franklin, IN", fips: "18047", employees: 0, corridor: "SE Indiana"},
-  {county: "Jennings, IN", fips: "18079", employees: 0, corridor: "SE Indiana"},
-  {county: "Floyd, IN", fips: "18043", employees: 0, corridor: "SE Indiana / Louisville metro"},
-  {county: "Brown, IN", fips: "18013", employees: 0, corridor: "SE Indiana"}
+  // Expanded SE Indiana counties (I-65/I-70 constrained) — real July 2024 QCEW
+  {county: "Dearborn, IN", fips: "18029", employees: 2023, corridor: "SE Indiana / Ohio River"},
+  {county: "Ohio, IN", fips: "18115", employees: 36, corridor: "SE Indiana / Ohio River (smallest county)"},
+  {county: "Switzerland, IN", fips: "18155", employees: 124, corridor: "SE Indiana / Ohio River"},
+  {county: "Jefferson, IN", fips: "18077", employees: 3002, corridor: "SE Indiana / Ohio River"},
+  {county: "Ripley, IN", fips: "18137", employees: 2410, corridor: "SE Indiana"},
+  {county: "Decatur, IN", fips: "18031", employees: 4561, corridor: "SE Indiana / I-74"},
+  {county: "Franklin, IN", fips: "18047", employees: 324, corridor: "SE Indiana"},
+  {county: "Jennings, IN", fips: "18079", employees: 2209, corridor: "SE Indiana"},
+  {county: "Floyd, IN", fips: "18043", employees: 5791, corridor: "SE Indiana / Louisville metro"},
+  {county: "Brown, IN", fips: "18013", employees: 160, corridor: "SE Indiana"}
 ];
 
 const data = [...rawData].sort((a, b) => b.employees - a.employees);
